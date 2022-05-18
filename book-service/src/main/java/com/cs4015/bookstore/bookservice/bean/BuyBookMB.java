@@ -15,8 +15,8 @@ import javax.annotation.PostConstruct;
 import com.cs4015.bookstore.api.core.book.models.Book;
 import com.cs4015.bookstore.api.core.book.models.BookType;
 import com.cs4015.bookstore.bookservice.core.book.manager.BookManager;
-import com.cs4015.bookstore.bookservice.core.user.model.User;
-import com.cs4015.bookstore.bookservice.core.user.services.UserService;
+import com.cs4015.bookstore.bookservice.core.user.manager.UserManager;
+import com.cs4015.bookstore.api.core.user.models.User;
 import com.cs4015.bookstore.bookservice.model.BookListing;
 import com.cs4015.bookstore.bookservice.model.BookListingAdapter;
 
@@ -29,7 +29,7 @@ public class BuyBookMB {
 	private BookManager bookManager;
 
 	@Autowired
-	private UserService userService;
+	private UserManager userManager;
 
 	private List<BookListing> allBooks;
 	private List<BookListing> filteredBooks;
@@ -44,10 +44,10 @@ public class BuyBookMB {
 	public void init() {
 		allBooks = new ArrayList<>();
 
-		Optional<List<Book>> bookResults = bookManager.getAllBookWithPagination(1, 0);
+		Optional<List<Book>> bookResults = bookManager.getAllBookWithPagination(1, 100);
 		if (bookResults.isPresent()) {
 			for (Book book : bookResults.get()) {
-				Optional<User> userResult = userService.getUser(book.getUserId());
+				Optional<User> userResult = userManager.getUserById(book.getUserId());
 				if (userResult.isPresent()) {
 					allBooks.add(new BookListingAdapter(book, userResult.get()));
 				}
